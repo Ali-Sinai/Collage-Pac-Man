@@ -4,6 +4,8 @@
 using namespace std;
 
 int i=1, j=1;
+char PacMan = '>';
+
 
 void InitField (char field[25][50]){
     for (int i = 0; i < 25; i++){
@@ -26,8 +28,7 @@ void PrintField(char field[25][50]){
     }
 }
 
-void GetKey(int &x, int &y){
-    char k = getch();
+void GetKey(int &x, int &y, char k){
     switch (k){
         case 'w':
             if (x-1 > 0 && x-1<24){
@@ -42,11 +43,13 @@ void GetKey(int &x, int &y){
         case 'a':
             if (y-1 > 0 && y-1<49){
                 y -= 1;
+                PacMan = '<';
             }
             break;
         case 'd':
             if (y+1 > 0 && y+1<49){
                 y += 1;
+                PacMan = '>';
             }
             break;
     }
@@ -54,7 +57,8 @@ void GetKey(int &x, int &y){
 }
 
 void OrdinaryMove(char Field[25][50]){
-    GetKey(i,j);
+    char k = getch();
+    GetKey(i,j, k);
     InitField(Field);
     for (int t = 1; t < 24; t++){
         for(int k = 1; k < 49; k++){
@@ -68,10 +72,29 @@ void OrdinaryMove(char Field[25][50]){
     OrdinaryMove(Field);
 }
 
+void InfinitiMove(char Field[25][50], char k){
+    do{
+        GetKey(i, j, k);
+        InitField(Field);
+        for (int t = 1; t < 24; t++){
+            for(int k = 1; k < 49; k++){
+                if ( t == i && k == j){
+                    Field[t][k] = '>';
+                }
+            }
+        }
+        system("cls");
+        PrintField(Field);
+    }while(!kbhit());
+    k = getch();
+    InfinitiMove(Field, k);
+}
+
 int main(){
     char field[25][50];
     InitField(field);
     field[1][1] = '>';
     PrintField(field);
-    OrdinaryMove(field);
+    char k = getch();
+    InfinitiMove(field, k);
 }
