@@ -87,6 +87,7 @@ void InfinitiMove(char Field[25][50], char k){
         PrintField(Field);
     }while(!kbhit());
     k = getch();
+    _sleep(0.02*1000);
     InfinitiMove(Field, k);
 }
 
