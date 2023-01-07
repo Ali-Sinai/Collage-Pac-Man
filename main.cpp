@@ -18,6 +18,10 @@ void RandomBlocks(char Field[25][50]){
     for (int t = 0; t < 100; t++){
         i = 1 + rand() % 24;
         j = 1 + rand() % 49;
+        if ( (11 <= i && i <= 15) || (23 <= j && j <= 28)){
+            t--;
+            continue;
+        }
         Field[i][j] = '#';
         // cout<<i<<","<<j<<"   ";
     }
@@ -29,8 +33,12 @@ void InitField (char field[25][50]){
         IsfirstRun = false;
         for (int i = 0; i < 25; i++){
         for (int j = 0; j < 50; j++){
-            if (i==0 || i==24 || j==0 || j==49){
-                field[i][j] = '#';
+            if (i==0 || i==24 || j==0 || j==49 || (i==11 && (23<=j && j<=28)) || (i==15 && (23<=j && j<=28)) || (j==23 && (11<=i && i<=15)) || (j==28 && (11<=i && i<=15))){
+                if ( i == 11 && (j == 25 || j==26)){
+                    field[i][j] = ' ';
+                }else{
+                    field[i][j] = '#';
+                }
             }else{
                 field[i][j] = ' ';
             }
