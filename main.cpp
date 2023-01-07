@@ -1,14 +1,33 @@
 #include <iostream>
 #include <conio.h>
 #include <stdlib.h>
+#include <cstdlib>
+#include <time.h>
 using namespace std;
 
+//----------------------
 int i=1, j=1;
+char LastChar = ' ';
 char PacMan = 16;
+bool IsfirstRun = true;
+//----------------------
+
+void RandomBlocks(char Field[25][50]){
+    int i, j;
+    srand((unsigned) time(0));
+    for (int t = 0; t < 100; t++){
+        i = 1 + rand() % 24;
+        j = 1 + rand() % 49;
+        Field[i][j] = '#';
+        // cout<<i<<","<<j<<"   ";
+    }
+}
 
 //---------------------------------------
 void InitField (char field[25][50]){
-    for (int i = 0; i < 25; i++){
+    if (IsfirstRun){
+        IsfirstRun = false;
+        for (int i = 0; i < 25; i++){
         for (int j = 0; j < 50; j++){
             if (i==0 || i==24 || j==0 || j==49){
                 field[i][j] = '#';
@@ -16,6 +35,8 @@ void InitField (char field[25][50]){
                 field[i][j] = ' ';
             }
         }
+    }
+    RandomBlocks(field);
     }
 }
 //--------------------------------------
@@ -61,15 +82,9 @@ void GetKey(int &x, int &y, char k){
 
 void OrdinaryMove(char Field[25][50]){
     char k = getch();
+    Field[i][j] = ' ';
     GetKey(i,j, k);
-    InitField(Field);
-    for (int t = 1; t < 24; t++){
-        for(int k = 1; k < 49; k++){
-            if ( t == i && k == j){
-                Field[t][k] = PacMan;
-            }
-        }
-    }
+    Field[i][j] = PacMan;
     system("cls");
     PrintField(Field);
     OrdinaryMove(Field);
@@ -79,24 +94,24 @@ void InfinitiMove(char Field[25][50], char k){
     do{
         int LastI = i, LastJ = j;
         GetKey(i, j, k);
-        InitField(Field);
-        for (int t = 1; t < 24; t++){
-            for(int k = 1; k < 49; k++){
-                if ( t == i && k == j){
-                    Field[t][k] = PacMan;
-                }
-            }
+        if (Field[i][j] == '#'){
+            i = LastI;
+            j = LastJ;
+            k = getch();
+            InfinitiMove(Field, k);
         }
+        Field[LastI][LastJ] = ' ';
+        Field[i][j] = PacMan;
         if (i == LastI && j == LastJ){
             continue;
         }else{
             system("cls");
             PrintField(Field);
         }
-
     }while(!kbhit());
     k = getch();
     InfinitiMove(Field, k);
+    
 }
 
 int main(){
@@ -104,6 +119,7 @@ int main(){
     InitField(field);
     field[1][1] = PacMan;
     PrintField(field);
+    // OrdinaryMove(field);
     char k = getch();
     InfinitiMove(field, k);
 }
