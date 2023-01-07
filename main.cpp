@@ -12,13 +12,13 @@ char PacMan = 16;
 bool IsfirstRun = true;
 //----------------------
 
-void RandomBlocks(char Field[25][50]){
+void RandomBlocks(char Field[15][30]){
     int i, j;
     srand((unsigned) time(0));
-    for (int t = 0; t < 100; t++){
-        i = 1 + rand() % 24;
-        j = 1 + rand() % 49;
-        if ( (11 <= i && i <= 15) || (23 <= j && j <= 28)){
+    for (int t = 0; t < 50; t++){
+        i = 1 + rand() % 14;
+        j = 1 + rand() % 29;
+        if ( (6 <= i && i <= 10) || (13 <= j && j <= 18)){
             t--;
             continue;
         }
@@ -28,19 +28,19 @@ void RandomBlocks(char Field[25][50]){
 }
 
 //---------------------------------------
-void InitField (char field[25][50]){
+void InitField (char field[15][30]){
     if (IsfirstRun){
         IsfirstRun = false;
-        for (int i = 0; i < 25; i++){
-        for (int j = 0; j < 50; j++){
-            if (i==0 || i==24 || j==0 || j==49 || (i==11 && (23<=j && j<=28)) || (i==15 && (23<=j && j<=28)) || (j==23 && (11<=i && i<=15)) || (j==28 && (11<=i && i<=15))){
-                if ( i == 11 && (j == 25 || j==26)){
+        for (int i = 0; i < 15; i++){
+        for (int j = 0; j < 30; j++){
+            if (i==0 || i==14 || j==0 || j==29 || (i==6 && (13<=j && j<=18)) || (i==10 && (13<=j && j<=18)) || (j==13 && (6<=i && i<=10)) || (j==18 && (6<=i && i<=10))){
+                if ( i == 6 && (j == 25 || j==26)){
                     field[i][j] = ' ';
                 }else{
                     field[i][j] = '#';
                 }
             }else{
-                field[i][j] = ' ';
+                field[i][j] = '.';
             }
         }
     }
@@ -49,9 +49,9 @@ void InitField (char field[25][50]){
 }
 //--------------------------------------
 
-void PrintField(char field[25][50]){
-    for (int i = 0; i < 25; i++){
-        for (int j = 0; j < 50; j++){
+void PrintField(char field[15][30]){
+    for (int i = 0; i < 15; i++){
+        for (int j = 0; j < 30; j++){
             cout<<field[i][j]<<" ";
         }
         cout<<endl;
@@ -61,25 +61,25 @@ void PrintField(char field[25][50]){
 void GetKey(int &x, int &y, char k){
     switch (k){
         case 'w':
-            if (x-1 > 0 && x-1<24){
+            if (x-1 > 0 && x-1<14){
                 x -= 1;
                 PacMan = 30;
             };
             break;
         case 's':
-            if (x+1 > 0 && x+1<24){
+            if (x+1 > 0 && x+1<14){
                 x += 1;
                 PacMan = 31;
             };
             break;
         case 'a':
-            if (y-1 > 0 && y-1<49){
+            if (y-1 > 0 && y-1<29){
                 y -= 1;
                 PacMan = 17;
             }
             break;
         case 'd':
-            if (y+1 > 0 && y+1<49){
+            if (y+1 > 0 && y+1<29){
                 y += 1;
                 PacMan = 16;
             }
@@ -88,7 +88,7 @@ void GetKey(int &x, int &y, char k){
 
 }
 
-void OrdinaryMove(char Field[25][50]){
+void OrdinaryMove(char Field[15][30]){
     char k = getch();
     Field[i][j] = ' ';
     GetKey(i,j, k);
@@ -98,7 +98,7 @@ void OrdinaryMove(char Field[25][50]){
     OrdinaryMove(Field);
 }
 
-void InfinitiMove(char Field[25][50], char k){
+void InfinitiMove(char Field[15][30], char k){
     do{
         int LastI = i, LastJ = j;
         GetKey(i, j, k);
@@ -123,7 +123,7 @@ void InfinitiMove(char Field[25][50], char k){
 }
 
 int main(){
-    char field[25][50];
+    char field[15][30];
     InitField(field);
     field[1][1] = PacMan;
     PrintField(field);
