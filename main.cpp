@@ -6,7 +6,7 @@ using namespace std;
 int i=1, j=1;
 char PacMan = 16;
 
-
+//---------------------------------------
 void InitField (char field[25][50]){
     for (int i = 0; i < 25; i++){
         for (int j = 0; j < 50; j++){
@@ -18,6 +18,7 @@ void InitField (char field[25][50]){
         }
     }
 }
+//--------------------------------------
 
 void PrintField(char field[25][50]){
     for (int i = 0; i < 25; i++){
