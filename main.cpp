@@ -4,7 +4,7 @@
 using namespace std;
 
 int i=1, j=1;
-char PacMan = '>';
+char PacMan = 16;
 
 
 void InitField (char field[25][50]){
@@ -33,23 +33,25 @@ void GetKey(int &x, int &y, char k){
         case 'w':
             if (x-1 > 0 && x-1<24){
                 x -= 1;
+                PacMan = 30;
             };
             break;
         case 's':
             if (x+1 > 0 && x+1<24){
                 x += 1;
+                PacMan = 31;
             };
             break;
         case 'a':
             if (y-1 > 0 && y-1<49){
                 y -= 1;
-                PacMan = '<';
+                PacMan = 17;
             }
             break;
         case 'd':
             if (y+1 > 0 && y+1<49){
                 y += 1;
-                PacMan = '>';
+                PacMan = 16;
             }
             break;
     }
@@ -63,7 +65,7 @@ void OrdinaryMove(char Field[25][50]){
     for (int t = 1; t < 24; t++){
         for(int k = 1; k < 49; k++){
             if ( t == i && k == j){
-                Field[t][k] = '>';
+                Field[t][k] = PacMan;
             }
         }
     }
@@ -74,27 +76,32 @@ void OrdinaryMove(char Field[25][50]){
 
 void InfinitiMove(char Field[25][50], char k){
     do{
+        int LastI = i, LastJ = j;
         GetKey(i, j, k);
         InitField(Field);
         for (int t = 1; t < 24; t++){
             for(int k = 1; k < 49; k++){
                 if ( t == i && k == j){
-                    Field[t][k] = '>';
+                    Field[t][k] = PacMan;
                 }
             }
         }
-        system("cls");
-        PrintField(Field);
+        if (i == LastI && j == LastJ){
+            continue;
+        }else{
+            system("cls");
+            PrintField(Field);
+        }
+
     }while(!kbhit());
     k = getch();
-    _sleep(0.02*1000);
     InfinitiMove(Field, k);
 }
 
 int main(){
     char field[25][50];
     InitField(field);
-    field[1][1] = '>';
+    field[1][1] = PacMan;
     PrintField(field);
     char k = getch();
     InfinitiMove(field, k);
