@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <cstdlib>
 #include <time.h>
+#include "color-console-master/include/color.hpp"
 using namespace std;
 
 //----------------------
@@ -123,11 +124,12 @@ void InfinitiMove(char Field[15][30], char k){
 }
 
 int main(){
-    char field[15][30];
-    InitField(field);
-    field[1][1] = PacMan;
-    PrintField(field);
-    // OrdinaryMove(field);
-    char k = getch();
-    InfinitiMove(field, k);
+    cout<<dye::aqua("hi there");
+    // char field[15][30];
+    // InitField(field);
+    // field[1][1] = PacMan;
+    // PrintField(field);
+    // // OrdinaryMove(field);
+    // char k = getch();
+    // InfinitiMove(field, k);
 }
