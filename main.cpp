@@ -24,7 +24,6 @@ void RandomBlocks(char Field[15][30]){
             continue;
         }
         Field[i][j] = '#';
-        // cout<<i<<","<<j<<"   ";
     }
 }
 
@@ -35,8 +34,8 @@ void InitField (char field[15][30]){
         for (int i = 0; i < 15; i++){
         for (int j = 0; j < 30; j++){
             if (i==0 || i==14 || j==0 || j==29 || (i==6 && (13<=j && j<=18)) || (i==10 && (13<=j && j<=18)) || (j==13 && (6<=i && i<=10)) || (j==18 && (6<=i && i<=10))){
-                if ( i == 6 && (j == 25 || j==26)){
-                    field[i][j] = ' ';
+                if ( i == 6 && (j == 15 || j==16)){
+                    field[i][j] = '.';
                 }else{
                     field[i][j] = '#';
                 }
@@ -53,7 +52,11 @@ void InitField (char field[15][30]){
 void PrintField(char field[15][30]){
     for (int i = 0; i < 15; i++){
         for (int j = 0; j < 30; j++){
+            if (field[i][j] == PacMan){
+                cout<<dye::blue(field[i][j])<<" ";
+            }else{
             cout<<field[i][j]<<" ";
+            }
         }
         cout<<endl;
     }
@@ -114,6 +117,7 @@ void InfinitiMove(char Field[15][30], char k){
         if (i == LastI && j == LastJ){
             continue;
         }else{
+            Sleep(30);
             system("cls");
             PrintField(Field);
         }
@@ -124,12 +128,12 @@ void InfinitiMove(char Field[15][30], char k){
 }
 
 int main(){
-    cout<<dye::aqua("hi there");
-    // char field[15][30];
-    // InitField(field);
-    // field[1][1] = PacMan;
-    // PrintField(field);
-    // // OrdinaryMove(field);
-    // char k = getch();
-    // InfinitiMove(field, k);
+    // cout<<dye::aqua("hi there");
+    char field[15][30];
+    InitField(field);
+    field[1][1] = PacMan;
+    PrintField(field);
+    // OrdinaryMove(field);
+    char k = getch();
+    InfinitiMove(field, k);
 }
