@@ -11,45 +11,72 @@ int i=1, j=1;
 char LastChar = ' ';
 char PacMan = 16;
 bool IsfirstRun = true;
+int Dots = 0;
+int Score = 0;
 //----------------------
 
-void RandomBlocks(char Field[15][30]){
-    int i, j;
-    srand((unsigned) time(0));
+int main();
+
+void blocksValidation(int x[]){
+    for (int i = 0; i < 50; i++){
+        for (int j = 0; j < i; j++){
+            if (abs(x[i] - x[j]) <= 3){
+                int newx;
+                do{
+                    newx = 1 + rand() % 14;
+                }while(6 <= newx && newx <= 10 && abs(x[i] - x[j]) <= 3);
+                x[i] = newx;
+            }
+        }
+    }
+}
+
+void randomBlocks(char Field[15][30]){
+    int i, j, lasti, lastj;
+    int x[50] = {0}, y[50] = {0};
+    srand((unsigned) time(NULL));
     for (int t = 0; t < 50; t++){
-        i = 1 + rand() % 14;
-        j = 1 + rand() % 29;
+        i = 1 + (rand() % 14);
+        j = 1 + (rand() % 29);
         if ( (6 <= i && i <= 10) || (13 <= j && j <= 18)){
             t--;
             continue;
         }
-        Field[i][j] = '#';
+        x[t] = i; y[t] = j;
+    }
+    blocksValidation(x);
+    for (int e = 0; e < 50; e++){
+        Field[x[e]][y[e]] = '#';
     }
 }
 
 //---------------------------------------
-void InitField (char field[15][30]){
+#define m 15
+#define n 30
+void initField (char field[m][30]){
     if (IsfirstRun){
         IsfirstRun = false;
         for (int i = 0; i < 15; i++){
-        for (int j = 0; j < 30; j++){
-            if (i==0 || i==14 || j==0 || j==29 || (i==6 && (13<=j && j<=18)) || (i==10 && (13<=j && j<=18)) || (j==13 && (6<=i && i<=10)) || (j==18 && (6<=i && i<=10))){
-                if ( i == 6 && (j == 15 || j==16)){
-                    field[i][j] = '.';
+            for (int j = 0; j < 30; j++){
+                if (i==0 || i==14 || j==0 || j==29 || (i==6 && (13<=j && j<=18)) || (i==10 && (13<=j && j<=18)) || (j==13 && (6<=i && i<=10)) || (j==18 && (6<=i && i<=10))){
+                    if ( i == 6 && (j == 15 || j==16)){
+                        field[i][j] = '.';
+                        Dots++;
+                    }else{
+                        field[i][j] = '#';
+                    }
                 }else{
-                    field[i][j] = '#';
+                    field[i][j] = '.';
+                    Dots++;
                 }
-            }else{
-                field[i][j] = '.';
             }
         }
-    }
-    RandomBlocks(field);
+        randomBlocks(field);
     }
 }
 //--------------------------------------
 
-void PrintField(char field[15][30]){
+void printField(char field[15][30]){
     for (int i = 0; i < 15; i++){
         for (int j = 0; j < 30; j++){
             if (field[i][j] == PacMan){
@@ -62,7 +89,7 @@ void PrintField(char field[15][30]){
     }
 }
 
-void GetKey(int &x, int &y, char k){
+void getKey(int &x, int &y, char k){
     switch (k){
         case 'w':
             if (x-1 > 0 && x-1<14){
@@ -92,48 +119,67 @@ void GetKey(int &x, int &y, char k){
 
 }
 
-void OrdinaryMove(char Field[15][30]){
+void ordinaryMove(char Field[15][30]){
     char k = getch();
     Field[i][j] = ' ';
-    GetKey(i,j, k);
+    getKey(i,j, k);
     Field[i][j] = PacMan;
     system("cls");
-    PrintField(Field);
-    OrdinaryMove(Field);
+    printField(Field);
+    ordinaryMove(Field);
 }
 
-void InfinitiMove(char Field[15][30], char k){
+void endGame(int Score){
+    cout<<"\n*** YOU WIN ***\nYour score is "<<Score;
+    cout<<"Do you want to play one more time? (y,n)";
+    char k = getch();
+    if (k == 'y'){
+        main();
+    }
+}
+
+void infinitiMove(char Field[15][30], char k){
     do{
         int LastI = i, LastJ = j;
-        GetKey(i, j, k);
+        getKey(i, j, k);
         if (Field[i][j] == '#'){
             i = LastI;
             j = LastJ;
             k = getch();
-            InfinitiMove(Field, k);
+            infinitiMove(Field, k);
+        }else if(Field[i][j] == '.'){
+            Dots--;
+            Score += 10;
         }
         Field[LastI][LastJ] = ' ';
         Field[i][j] = PacMan;
         if (i == LastI && j == LastJ){
-            continue;
+            break;
         }else{
             Sleep(30);
             system("cls");
-            PrintField(Field);
+            printField(Field);
         }
+        cout<<"Your Score : "<<Score<<endl;
+        cout<<"Dots : "<<Dots<<endl;
     }while(!kbhit());
-    k = getch();
-    InfinitiMove(Field, k);
-    
+    if (Dots == 35){
+        system("cls");
+        endGame(Score);
+    }else{
+        k = getch();
+        infinitiMove(Field, k);
+    }
 }
 
 int main(){
-    // cout<<dye::aqua("hi there");
+    system("cls");
+    Score = 0;
     char field[15][30];
-    InitField(field);
+    // randomBlocks(field);
+    initField(field);
     field[1][1] = PacMan;
-    PrintField(field);
-    // OrdinaryMove(field);
+    printField(field);
     char k = getch();
-    InfinitiMove(field, k);
+    infinitiMove(field, k);
 }
