@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <cstdlib>
 #include <time.h>
+#include <windows.h>
 #include "color-console-master/include/color.hpp"
 using namespace std;
 
@@ -12,21 +13,27 @@ char LastChar = ' ';
 char PacMan = 16;
 bool IsfirstRun = true;
 //----------------------
-
+void gotoxy(char x, char y)
+{
+	static const HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	std::cout.flush();
+	COORD coord = { (SHORT)x, (SHORT)y };
+	SetConsoleCursorPosition(hOut, coord);
+}
+//----------------------
 void RandomBlocks(char Field[15][30]){
     int i, j;
     srand((unsigned) time(0));
     for (int t = 0; t < 50; t++){
-        i = 1 + rand() % 14;
-        j = 1 + rand() % 29;
-        if ( (6 <= i && i <= 10) || (13 <= j && j <= 18)){
+            i = 1 + rand() % 14;
+            j = 1 + rand() % 29;
+            if ( (6 <= i && i <= 10) || (13 <= j && j <= 18)){
             t--;
-            continue;
-        }
+                continue;
+            }
         Field[i][j] = '#';
     }
 }
-
 //---------------------------------------
 void InitField (char field[15][30]){
     if (IsfirstRun){
@@ -48,7 +55,6 @@ void InitField (char field[15][30]){
     }
 }
 //--------------------------------------
-
 void PrintField(char field[15][30]){
     for (int i = 0; i < 15; i++){
         for (int j = 0; j < 30; j++){
@@ -61,7 +67,7 @@ void PrintField(char field[15][30]){
         cout<<endl;
     }
 }
-
+//-------------------------------------------
 void GetKey(int &x, int &y, char k){
     switch (k){
         case 'w':
@@ -91,7 +97,7 @@ void GetKey(int &x, int &y, char k){
     }
 
 }
-
+//--------------------------------------
 void OrdinaryMove(char Field[15][30]){
     char k = getch();
     Field[i][j] = ' ';
@@ -101,7 +107,7 @@ void OrdinaryMove(char Field[15][30]){
     PrintField(Field);
     OrdinaryMove(Field);
 }
-
+//---------------------------------------
 void InfinitiMove(char Field[15][30], char k){
     do{
         int LastI = i, LastJ = j;
@@ -126,14 +132,41 @@ void InfinitiMove(char Field[15][30], char k){
     InfinitiMove(Field, k);
     
 }
-
+//------------------------------------------------------
+void moveWithCursorInfinity(char Field[15][30], char k){
+    do{
+        int LastI = i, LastJ = j;
+        GetKey(i, j, k);
+        if (Field[i][j] == '#'){
+            i = LastI;
+            j = LastJ;
+            k = getch();
+            moveWithCursorInfinity(Field, k);
+        }
+        Field[LastI][LastJ] = ' ';
+        Field[i][j] = PacMan;
+        if (i == LastI && j == LastJ){
+            continue;
+        }else{
+            gotoxy(0,0);
+            Sleep(30);
+            PrintField(Field);
+        }
+    }while(!kbhit());
+    k = getch();
+    moveWithCursorInfinity(Field, k);
+}
+//-----------------------------------------------
 int main(){
     // cout<<dye::aqua("hi there");
+    system("cls");
     char field[15][30];
     InitField(field);
     field[1][1] = PacMan;
     PrintField(field);
+    // cursorPrintField(field);
     // OrdinaryMove(field);
     char k = getch();
-    InfinitiMove(field, k);
+    // InfinitiMove(field, k);
+    moveWithCursorInfinity(field, k);
 }
