@@ -12,6 +12,8 @@ int i=1, j=1;
 char LastChar = ' ';
 char PacMan = 16;
 bool IsfirstRun = true;
+#define FieldI 15
+#define FieldJ 30
 //----------------------
 void gotoxy(char x, char y)
 {
@@ -20,44 +22,45 @@ void gotoxy(char x, char y)
 	COORD coord = { (SHORT)x, (SHORT)y };
 	SetConsoleCursorPosition(hOut, coord);
 }
-//----------------------
-void RandomBlocks(char Field[15][30]){
-    int i, j;
+//----------------------------------------------------
+bool blockVlidation(int NewI, int NewJ){
+    if (NewI == 0 || NewI == FieldI-1 || NewJ == 0 || NewJ == FieldJ-1 || (NewI==(FieldI/2)-1 && (FieldJ/2)-2 <= NewJ && NewJ <= (FieldJ/2)+2)){
+        return false;
+    }
+    return NewI % 3 == 0 ? true : false;
+}
+//------------------------------------
+void RandomBlocks(char Field[FieldI][FieldJ]){
+    int BlockNo = 80, i, j, x[BlockNo] = {0};
     srand((unsigned) time(0));
-    for (int t = 0; t < 50; t++){
-            i = 1 + rand() % 14;
-            j = 1 + rand() % 29;
-            if ( (6 <= i && i <= 10) || (13 <= j && j <= 18)){
-            t--;
-                continue;
-            }
+    for (int t = 0; t < BlockNo; t++){
+        do{
+            i = 1 + rand() % FieldI-1;
+            j = 1 + rand() % FieldJ-1;
+        }while (!blockVlidation(i, j));
         Field[i][j] = '#';
     }
 }
 //---------------------------------------
-void InitField (char field[15][30]){
+void InitField (char field[FieldI][FieldJ]){
     if (IsfirstRun){
         IsfirstRun = false;
-        for (int i = 0; i < 15; i++){
-        for (int j = 0; j < 30; j++){
-            if (i==0 || i==14 || j==0 || j==29 || (i==6 && (13<=j && j<=18)) || (i==10 && (13<=j && j<=18)) || (j==13 && (6<=i && i<=10)) || (j==18 && (6<=i && i<=10))){
-                if ( i == 6 && (j == 15 || j==16)){
-                    field[i][j] = '.';
-                }else{
+        for (int i = 0; i < FieldI; i++){
+            for (int j = 0; j < FieldJ; j++){
+                if (i==0 || i==FieldI-1 || j==0 || j==FieldJ-1 || (i==(FieldI/2)-1 && j == (FieldJ/2)-2 && j == (FieldJ/2)+2) || (i==(FieldI/2)+1 && (((FieldJ/2)-2)<=j && j<=((FieldJ/2)+2))) || (j == (FieldJ/2)-2) && ((FieldI/2)-1 <= i && i <= (FieldI/2)+1)  || (j == (FieldJ/2)+2) && ((FieldI/2)-1 <= i && i <= (FieldI/2)+1)){
                     field[i][j] = '#';
+                }else{
+                    field[i][j] = '.';
                 }
-            }else{
-                field[i][j] = '.';
             }
         }
-    }
-    RandomBlocks(field);
+        RandomBlocks(field);
     }
 }
 //--------------------------------------
-void PrintField(char field[15][30]){
-    for (int i = 0; i < 15; i++){
-        for (int j = 0; j < 30; j++){
+void PrintField(char field[FieldI][FieldJ]){
+    for (int i = 0; i < FieldI; i++){
+        for (int j = 0; j < FieldJ; j++){
             if (field[i][j] == PacMan){
                 cout<<dye::blue(field[i][j])<<" ";
             }else{
@@ -71,25 +74,25 @@ void PrintField(char field[15][30]){
 void GetKey(int &x, int &y, char k){
     switch (k){
         case 'w':
-            if (x-1 > 0 && x-1<14){
+            if (x-1 > 0 && x-1<FieldI-1){
                 x -= 1;
                 PacMan = 30;
             };
             break;
         case 's':
-            if (x+1 > 0 && x+1<14){
+            if (x+1 > 0 && x+1<FieldI-1){
                 x += 1;
                 PacMan = 31;
             };
             break;
         case 'a':
-            if (y-1 > 0 && y-1<29){
+            if (y-1 > 0 && y-1<FieldJ-1){
                 y -= 1;
                 PacMan = 17;
             }
             break;
         case 'd':
-            if (y+1 > 0 && y+1<29){
+            if (y+1 > 0 && y+1<FieldJ-1){
                 y += 1;
                 PacMan = 16;
             }
@@ -98,42 +101,42 @@ void GetKey(int &x, int &y, char k){
 
 }
 //--------------------------------------
-void OrdinaryMove(char Field[15][30]){
-    char k = getch();
-    Field[i][j] = ' ';
-    GetKey(i,j, k);
-    Field[i][j] = PacMan;
-    system("cls");
-    PrintField(Field);
-    OrdinaryMove(Field);
-}
+// void OrdinaryMove(char Field[FieldI][FieldJ]){
+//     char k = getch();
+//     Field[i][j] = ' ';
+//     GetKey(i,j, k);
+//     Field[i][j] = PacMan;
+//     system("cls");
+//     PrintField(Field);
+//     OrdinaryMove(Field);
+// }
 //---------------------------------------
-void InfinitiMove(char Field[15][30], char k){
-    do{
-        int LastI = i, LastJ = j;
-        GetKey(i, j, k);
-        if (Field[i][j] == '#'){
-            i = LastI;
-            j = LastJ;
-            k = getch();
-            InfinitiMove(Field, k);
-        }
-        Field[LastI][LastJ] = ' ';
-        Field[i][j] = PacMan;
-        if (i == LastI && j == LastJ){
-            continue;
-        }else{
-            Sleep(30);
-            system("cls");
-            PrintField(Field);
-        }
-    }while(!kbhit());
-    k = getch();
-    InfinitiMove(Field, k);
+// void InfinitiMove(char Field[FieldI][FieldJ], char k){
+//     do{
+//         int LastI = i, LastJ = j;
+//         GetKey(i, j, k);
+//         if (Field[i][j] == '#'){
+//             i = LastI;
+//             j = LastJ;
+//             k = getch();
+//             InfinitiMove(Field, k);
+//         }
+//         Field[LastI][LastJ] = ' ';
+//         Field[i][j] = PacMan;
+//         if (i == LastI && j == LastJ){
+//             continue;
+//         }else{
+//             Sleep(30);
+//             system("cls");
+//             PrintField(Field);
+//         }
+//     }while(!kbhit());
+//     k = getch();
+//     InfinitiMove(Field, k);
     
-}
+// }
 //------------------------------------------------------
-void moveWithCursorInfinity(char Field[15][30], char k){
+void moveWithCursorInfinity(char Field[FieldI][FieldJ], char k){
     do{
         int LastI = i, LastJ = j;
         GetKey(i, j, k);
@@ -160,7 +163,7 @@ void moveWithCursorInfinity(char Field[15][30], char k){
 int main(){
     // cout<<dye::aqua("hi there");
     system("cls");
-    char field[15][30];
+    char field[FieldI][FieldJ];
     InitField(field);
     field[1][1] = PacMan;
     PrintField(field);
