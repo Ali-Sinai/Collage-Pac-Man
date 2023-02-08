@@ -25,8 +25,10 @@ char Field[FieldI][FieldJ];
 int Life = 4;
 bool GameEnded = false;
 bool a = false;
-bool isfirstthread = true;
+bool IsFirstThread = true;
 int run = 1;
+int GhostisRunningTime = 0;
+bool GhostisCaught = false;
 //----------------------
 int main();
 void ghost(int Gi, int Gj, char LastChar);
@@ -68,6 +70,15 @@ void randomBlocks()
         } while (!blockVlidation(i, j));
         Field[i][j] = '#';
     }
+    for (int t = 0; t < 5; t++)
+    {
+        do
+        {
+            i = 1 + rand() % FieldI - 1;
+            j = 1 + rand() % FieldJ - 1;
+        } while (!blockVlidation(i, j));
+        Field[i][j] = '^';
+    }
 }
 //---------------------------------------
 void initField()
@@ -76,46 +87,18 @@ void initField()
     {
         for (int j = 0; j < FieldJ; j++)
         {
-            if ((i == 0 || i == FieldI - 1) && j != 0 && j != FieldJ - 1)
+            if (i == 0 || i == FieldI - 1 || j == 0 || j == FieldJ - 1 || (i == (FieldI / 2) - 1 && j == (FieldJ / 2) - 2 && j == (FieldJ / 2) + 2) || (i == (FieldI / 2) + 1 && (((FieldJ / 2) - 2) <= j && j <= ((FieldJ / 2) + 2))) || ((j == (FieldJ / 2) - 2) && ((FieldI / 2) - 1 <= i && i <= (FieldI / 2) + 1)) || ((j == (FieldJ / 2) + 2) && ((FieldI / 2) - 1 <= i && i <= (FieldI / 2) + 1)))
             {
-                Field[i][j] = (char)205;
+                Field[i][j] = '#';
             }
-            else if (i == 0 && j == 0)
+            else if ((i == (FieldI / 2) && (j == (FieldJ / 2) - 1 || j == (FieldJ / 2) || j == (FieldJ / 2) + 1)))
             {
-                Field[i][j] = (char)201;
-            }
-            else if (i == 0 && j == FieldJ - 1)
-            {
-                Field[i][j] = (char)187;
-            }
-            else if (i == FieldI - 1 && j == 0)
-            {
-                Field[i][j] = (char)200;
-            }
-            else if (i == FieldI - 1 && j == FieldJ - 1)
-            {
-                Field[i][j] = (char)188;
-            }
-            else if (i != 0 && i != FieldI - 1 && (j == 0 || j == FieldJ - 1)){
-                Field[i][j] = (char)186;
+                Field[i][j] = 233;
             }
             else
             {
                 Field[i][j] = '.';
             }
-            //===============================================================================================
-            // if (i == 0 || i == FieldI - 1 || j == 0 || j == FieldJ - 1 || (i == (FieldI / 2) - 1 && j == (FieldJ / 2) - 2 && j == (FieldJ / 2) + 2) || (i == (FieldI / 2) + 1 && (((FieldJ / 2) - 2) <= j && j <= ((FieldJ / 2) + 2))) || ((j == (FieldJ / 2) - 2) && ((FieldI / 2) - 1 <= i && i <= (FieldI / 2) + 1)) || ((j == (FieldJ / 2) + 2) && ((FieldI / 2) - 1 <= i && i <= (FieldI / 2) + 1)))
-            // {
-            //     Field[i][j] = '#';
-            // }
-            // else if ((i == (FieldI / 2) && (j == (FieldJ / 2) - 1 || j == (FieldJ / 2) || j == (FieldJ / 2) + 1)))
-            // {
-            //     Field[i][j] = 233;
-            // }
-            // else
-            // {
-            //     Field[i][j] = '.';
-            // }
         }
     }
     randomBlocks();
@@ -123,25 +106,31 @@ void initField()
 //--------------------------------------
 void printField()
 {
+    if (run == -1)
+    {
+        cout << dye::red("DUMB Ghost activated!!\nTime remaining : " 
+        + to_string(GhostisRunningTime));
+    }
+    else if (run == 1)
+    {
+        cout << dye::red("Run from the ghosts NOW!!");
+    }
+    cout << dye::red("\nLIFE REMAINING : " + to_string(Life) + "  |  YOUR SCORE IS : " + to_string(Score) + "\n");
     for (int i = 0; i < FieldI; i++)
     {
         for (int j = 0; j < FieldJ; j++)
         {
             if (Field[i][j] == PacMan)
             {
-                cout << dye::yellow(Field[i][j]) << " ";
+                run == 1 ? cout << dye::yellow(Field[i][j]) << " " : cout << dye::red(Field[i][j]) << " ";
             }
             else if (Field[i][j] == (char)233)
             {
-                cout << dye::red(Field[i][j]) << " ";
-            }
-            else if ( Field[i][j] == (char)205)
-            {
-                cout << Field[i][j] << Field[i][j];
+                run == 1 ? cout << dye::red(Field[i][j]) << " " : cout << dye::blue(Field[i][j]) << " ";
             }
             else
             {
-                cout<< Field[i][j] << " ";
+                cout << Field[i][j] << " ";
             }
         }
         cout << endl;
@@ -155,28 +144,60 @@ void getKey(int &x, int &y, char k, string C)
     case 'w':
         if (x - 1 > 0 && x - 1 < FieldI - 1)
         {
-            x -= run;
+            // x -= run;
+            if (run == -1)
+            {
+                C == "Pacman" ? x += run : x -= run;
+            }
+            else
+            {
+                x -= run;
+            }
             PacMan = C == "Pacman" ? 30 : PacMan;
         };
         break;
     case 's':
         if (x + 1 > 0 && x + 1 < FieldI - 1)
         {
-            x += run;
+            // x += run;
+            if (run == -1)
+            {
+                C == "Pacman" ? x -= run : x += run;
+            }
+            else
+            {
+                x += run;
+            }
             PacMan = C == "Pacman" ? 31 : PacMan;
         };
         break;
     case 'a':
         if (y - 1 > 0 && y - 1 < FieldJ - 1)
         {
-            y -= run;
+            // y -= run;
+            if (run == -1)
+            {
+                C == "Pacman" ? y += run : x -= run;
+            }
+            else
+            {
+                y -= run;
+            }
             PacMan = C == "Pacman" ? 17 : PacMan;
         }
         break;
     case 'd':
         if (y + 1 > 0 && y + 1 < FieldJ - 1)
         {
-            y += run;
+            // y += run;
+            if (run == -1)
+            {
+                C == "Pacman" ? y -= run : x += run;
+            }
+            else
+            {
+                y += run;
+            }
             PacMan = C == "Pacman" ? 16 : PacMan;
         }
         break;
@@ -232,6 +253,7 @@ void checkNumberOfDots()
     }
     if (Dots == 0)
     {
+        system("cls");
         endGame(Score, true);
     }
 }
@@ -239,12 +261,11 @@ void checkNumberOfDots()
 void endGame(int Score, bool win)
 {
     GameEnded = true;
-    Sleep(100);
+    Sleep(200);
     system("cls");
     win ? cout << "YOU WIN!!" : cout << "YOU LOST!!";
     cout << "\nYour Score is " << Score << "!!\nPress any key to continue...";
-    char ans = getch();
-    cout << "GoodBye!";
+    getch();
     abort();
 }
 //------------------------------------------------------
@@ -346,15 +367,16 @@ int ranDirFunc(int Gi, int Gj)
             return 3;
         }
     }
-    return;
 }
 //------------------------------------------------------
 void ghost(int Gi, int Gj, char LastChar)
 {
-    if (isfirstthread)
+    int FirstGI, FirstGJ;
+    if (IsFirstThread)
     {
-        int FirstGI = Gi, FirstGJ = Gj;
-        isfirstthread = false;
+        FirstGI = Gi;
+        FirstGJ = Gj;
+        IsFirstThread = false;
     }
     Sleep(100);
     int RandDirection;
@@ -366,6 +388,13 @@ void ghost(int Gi, int Gj, char LastChar)
     {
         RandDirection = rand() % 4;
     }
+    if (i == Gi && j == Gj && GhostisCaught)
+    {
+        Gi = FirstGI + 1;
+        Gj = FirstGJ;
+        GhostisCaught = false;
+        Sleep(500);
+    }
     changeGhostLoc(RandDirection, Gi, Gj, LastChar);
 }
 //------------------------------------------------------
@@ -373,7 +402,16 @@ void moveWithCursorInfinity(char k)
 {
     do
     {
+        if (GameEnded){
+            system("cls");
+            break;
+        }
         checkNumberOfDots();
+        if (GhostisRunningTime == 0 && run == -1)
+        {
+            run = 1;
+            system("cls");
+        }
         int LastI = i, LastJ = j;
         getKey(i, j, k, "Pacman");
         if (Field[i][j] == '#')
@@ -388,17 +426,30 @@ void moveWithCursorInfinity(char k)
             Score += 10;
             Dots--;
         }
-        if (Field[i][j] == (char)254){
-            run *= run == -1 ? 1 : -1;
+        if (Field[i][j] == '^')
+        {
+            system("cls");
+            GhostisRunningTime = 90;
+            run = -1;
             Score += 50;
         }
-        if (run == -1){}
+        if (run == -1)
+        {
+            if (Field[i][j] == (char)233)
+            {
+                Score += 200;
+                GhostisCaught = true;
+            }
+        }
         Field[LastI][LastJ] = ' ';
         Field[i][j] = PacMan;
         gotoxy(0, 0);
         Sleep(40);
         printField();
-        cout << dye::black_on_white("Your Score : ") << dye::black_on_white(Score) << endl;
+        if (run == -1)
+        {
+            GhostisRunningTime -= 1;
+        }
     } while (!kbhit());
     k = getch();
     moveWithCursorInfinity(k);
@@ -418,10 +469,10 @@ int main()
     thread g3(ghost, (FieldI / 2), (FieldJ / 2) + 1, LastChar3);
     if (GameEnded)
     {
+        Sleep(200);
+        system("cls");
         pac.detach();
-        g1.detach();
-        g2.detach();
-        g3.detach();
+        system("cls");
     }
     pac.join();
     g1.join();
