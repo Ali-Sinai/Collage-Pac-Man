@@ -29,6 +29,7 @@ bool IsFirstThread = true;
 int run = 1;
 int GhostisRunningTime = 0;
 bool GhostisCaught = false;
+int Difficulty;
 //----------------------
 int main();
 void ghost(int Gi, int Gj, char LastChar);
@@ -50,11 +51,16 @@ void gotoxy(char x, char y)
 //----------------------------------------------------
 bool blockVlidation(int NewI, int NewJ)
 {
+    int PatternNo = 2;
     if (NewI == 0 || NewI == FieldI - 1 || NewJ == 0 || NewJ == FieldJ - 1 || (NewI == (FieldI / 2) - 1 && (FieldJ / 2) - 2 <= NewJ && NewJ <= (FieldJ / 2) + 2))
     {
         return false;
     }
-    return NewI % 2 == 0 && NewJ % 2 == 0 ? true : false;
+    if (Difficulty == 4)
+    {
+        PatternNo = 2 + rand() % 3;
+    }
+    return NewI % PatternNo == 0 && NewJ % PatternNo == 0 ? true : false;
 }
 //------------------------------------
 void randomBlocks()
@@ -83,6 +89,7 @@ void randomBlocks()
 //---------------------------------------
 void initField()
 {
+    int DotNumberForVeryHard;
     for (int i = 0; i < FieldI; i++)
     {
         for (int j = 0; j < FieldJ; j++)
@@ -108,8 +115,7 @@ void printField()
 {
     if (run == -1)
     {
-        cout << dye::red("DUMB Ghost activated!!\nTime remaining : " 
-        + to_string(GhostisRunningTime));
+        cout << dye::red("DUMB Ghost activated!!\nTime remaining : " + to_string(GhostisRunningTime));
     }
     else if (run == 1)
     {
@@ -369,8 +375,33 @@ int ranDirFunc(int Gi, int Gj)
     }
 }
 //------------------------------------------------------
+int ghostDifficulty(int Gi, int Gj)
+{
+    switch (Difficulty)
+    {
+    case 1:
+        return rand() % 4;
+        break;
+    case 2:
+        if (abs(i - Gi) <= 5 && abs(j - Gj) <= 5)
+        {
+            return ranDirFunc(Gi, Gj);
+        }
+        else
+        {
+            return rand() % 4;
+        }
+        break;
+    case 3:
+    case 4:
+        return ranDirFunc(Gi, Gj);
+        break;
+    }
+}
+//------------------------------------------------------
 void ghost(int Gi, int Gj, char LastChar)
 {
+    srand((unsigned)time(0));
     int FirstGI, FirstGJ;
     if (IsFirstThread)
     {
@@ -379,15 +410,7 @@ void ghost(int Gi, int Gj, char LastChar)
         IsFirstThread = false;
     }
     Sleep(100);
-    int RandDirection;
-    if (abs(i - Gi) <= 5 && abs(j - Gj) <= 5)
-    {
-        RandDirection = ranDirFunc(Gi, Gj);
-    }
-    else
-    {
-        RandDirection = rand() % 4;
-    }
+    int RandDirection = ghostDifficulty(Gi, Gj);
     if (i == Gi && j == Gj && GhostisCaught)
     {
         Gi = FirstGI + 1;
@@ -402,7 +425,12 @@ void moveWithCursorInfinity(char k)
 {
     do
     {
-        if (GameEnded){
+        if (Difficulty == 4)
+        {
+            randomBlocks();
+        }
+        if (GameEnded)
+        {
             system("cls");
             break;
         }
@@ -459,9 +487,28 @@ void moveWithCursorInfinity(char k)
 int main()
 {
     system("cls");
+    cout << "HI !\nMy name is Mr.PacMan. Choose your difficulty :";
+    cout << "\n1. Pfff.. :)\n2. Hmm.. Ok\n3. Oh no...\n4. HOLY SH**!!\n>> ";
+    cin >> Difficulty;
     initField();
-    Field[1][1] = PacMan;
-    printField();
+    srand((unsigned)time(0));
+    switch (Difficulty)
+    {
+    case 1:
+    case 2:
+        Field[1][1] = PacMan;
+        printField();
+        break;
+    case 3:
+    case 4:
+        do
+        {
+            i = 1 + rand() % FieldI - 1;
+            j = 1 + rand() % FieldI - 1;
+        } while (Field[i][j] == '#' || Field[i][j] == char(233) || Field[i][j] == '^');
+        Field[i][j] = PacMan;
+        break;
+    }
     char k = getch();
     thread pac(moveWithCursorInfinity, k);
     thread g1(ghost, (FieldI / 2), (FieldJ / 2) - 1, LastChar1);
