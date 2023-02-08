@@ -26,6 +26,7 @@ int Life = 4;
 bool GameEnded = false;
 bool a = false;
 bool isfirstthread = true;
+int run = 1;
 //----------------------
 int main();
 void ghost(int Gi, int Gj, char LastChar);
@@ -134,9 +135,13 @@ void printField()
             {
                 cout << dye::red(Field[i][j]) << " ";
             }
+            else if ( Field[i][j] == (char)205)
+            {
+                cout << Field[i][j] << Field[i][j];
+            }
             else
             {
-                cout << Field[i][j] << " ";
+                cout<< Field[i][j] << " ";
             }
         }
         cout << endl;
@@ -150,28 +155,28 @@ void getKey(int &x, int &y, char k, string C)
     case 'w':
         if (x - 1 > 0 && x - 1 < FieldI - 1)
         {
-            x -= 1;
+            x -= run;
             PacMan = C == "Pacman" ? 30 : PacMan;
         };
         break;
     case 's':
         if (x + 1 > 0 && x + 1 < FieldI - 1)
         {
-            x += 1;
+            x += run;
             PacMan = C == "Pacman" ? 31 : PacMan;
         };
         break;
     case 'a':
         if (y - 1 > 0 && y - 1 < FieldJ - 1)
         {
-            y -= 1;
+            y -= run;
             PacMan = C == "Pacman" ? 17 : PacMan;
         }
         break;
     case 'd':
         if (y + 1 > 0 && y + 1 < FieldJ - 1)
         {
-            y += 1;
+            y += run;
             PacMan = C == "Pacman" ? 16 : PacMan;
         }
         break;
@@ -234,30 +239,13 @@ void checkNumberOfDots()
 void endGame(int Score, bool win)
 {
     GameEnded = true;
+    Sleep(100);
     system("cls");
     win ? cout << "YOU WIN!!" : cout << "YOU LOST!!";
-    cout << "\nYour Score is " << Score << "!!\nDo You Want to Play Again? (y,n)";
+    cout << "\nYour Score is " << Score << "!!\nPress any key to continue...";
     char ans = getch();
-    if (ans == 'y')
-    {
-        system("cls");
-        gotoxy(0, 0);
-        i = 1;
-        j = 1;
-        LastChar1 = '.';
-        LastChar2 = '.';
-        LastChar3 = '.';
-        PacMan = 16;
-        Dots = 0;
-        Score = 0;
-        isreplayed = true;
-        main();
-    }
-    else
-    {
-        cout << "GoodBye!";
-        abort();
-    }
+    cout << "GoodBye!";
+    abort();
 }
 //------------------------------------------------------
 bool isCaugthByGhost(int Gi, int Gj)
@@ -358,6 +346,7 @@ int ranDirFunc(int Gi, int Gj)
             return 3;
         }
     }
+    return;
 }
 //------------------------------------------------------
 void ghost(int Gi, int Gj, char LastChar)
@@ -399,6 +388,11 @@ void moveWithCursorInfinity(char k)
             Score += 10;
             Dots--;
         }
+        if (Field[i][j] == (char)254){
+            run *= run == -1 ? 1 : -1;
+            Score += 50;
+        }
+        if (run == -1){}
         Field[LastI][LastJ] = ' ';
         Field[i][j] = PacMan;
         gotoxy(0, 0);
@@ -425,6 +419,9 @@ int main()
     if (GameEnded)
     {
         pac.detach();
+        g1.detach();
+        g2.detach();
+        g3.detach();
     }
     pac.join();
     g1.join();
