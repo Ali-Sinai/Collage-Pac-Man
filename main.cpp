@@ -75,18 +75,46 @@ void initField()
     {
         for (int j = 0; j < FieldJ; j++)
         {
-            if (i == 0 || i == FieldI - 1 || j == 0 || j == FieldJ - 1 || (i == (FieldI / 2) - 1 && j == (FieldJ / 2) - 2 && j == (FieldJ / 2) + 2) || (i == (FieldI / 2) + 1 && (((FieldJ / 2) - 2) <= j && j <= ((FieldJ / 2) + 2))) || ((j == (FieldJ / 2) - 2) && ((FieldI / 2) - 1 <= i && i <= (FieldI / 2) + 1)) || ((j == (FieldJ / 2) + 2) && ((FieldI / 2) - 1 <= i && i <= (FieldI / 2) + 1)))
+            if ((i == 0 || i == FieldI - 1) && j != 0 && j != FieldJ - 1)
             {
-                Field[i][j] = '#';
+                Field[i][j] = (char)205;
             }
-            else if ((i == (FieldI / 2) && (j == (FieldJ / 2) - 1 || j == (FieldJ / 2) || j == (FieldJ / 2) + 1)))
+            else if (i == 0 && j == 0)
             {
-                Field[i][j] = 233;
+                Field[i][j] = (char)201;
+            }
+            else if (i == 0 && j == FieldJ - 1)
+            {
+                Field[i][j] = (char)187;
+            }
+            else if (i == FieldI - 1 && j == 0)
+            {
+                Field[i][j] = (char)200;
+            }
+            else if (i == FieldI - 1 && j == FieldJ - 1)
+            {
+                Field[i][j] = (char)188;
+            }
+            else if (i != 0 && i != FieldI - 1 && (j == 0 || j == FieldJ - 1)){
+                Field[i][j] = (char)186;
             }
             else
             {
                 Field[i][j] = '.';
             }
+            //===============================================================================================
+            // if (i == 0 || i == FieldI - 1 || j == 0 || j == FieldJ - 1 || (i == (FieldI / 2) - 1 && j == (FieldJ / 2) - 2 && j == (FieldJ / 2) + 2) || (i == (FieldI / 2) + 1 && (((FieldJ / 2) - 2) <= j && j <= ((FieldJ / 2) + 2))) || ((j == (FieldJ / 2) - 2) && ((FieldI / 2) - 1 <= i && i <= (FieldI / 2) + 1)) || ((j == (FieldJ / 2) + 2) && ((FieldI / 2) - 1 <= i && i <= (FieldI / 2) + 1)))
+            // {
+            //     Field[i][j] = '#';
+            // }
+            // else if ((i == (FieldI / 2) && (j == (FieldJ / 2) - 1 || j == (FieldJ / 2) || j == (FieldJ / 2) + 1)))
+            // {
+            //     Field[i][j] = 233;
+            // }
+            // else
+            // {
+            //     Field[i][j] = '.';
+            // }
         }
     }
     randomBlocks();
@@ -108,7 +136,7 @@ void printField()
             }
             else
             {
-                cout<<Field[i][j] << " ";
+                cout << Field[i][j] << " ";
             }
         }
         cout << endl;
@@ -386,9 +414,6 @@ void moveWithCursorInfinity(char k)
 int main()
 {
     system("cls");
-    initField();
-    Field[1][1] = PacMan;
-    printField();
     initField();
     Field[1][1] = PacMan;
     printField();
