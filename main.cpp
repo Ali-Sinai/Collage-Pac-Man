@@ -70,29 +70,25 @@ void randomBlocks()
 //---------------------------------------
 void initField()
 {
-    if (IsfirstRun)
+    for (int i = 0; i < FieldI; i++)
     {
-        IsfirstRun = false;
-        for (int i = 0; i < FieldI; i++)
+        for (int j = 0; j < FieldJ; j++)
         {
-            for (int j = 0; j < FieldJ; j++)
+            if (i == 0 || i == FieldI - 1 || j == 0 || j == FieldJ - 1 || (i == (FieldI / 2) - 1 && j == (FieldJ / 2) - 2 && j == (FieldJ / 2) + 2) || (i == (FieldI / 2) + 1 && (((FieldJ / 2) - 2) <= j && j <= ((FieldJ / 2) + 2))) || ((j == (FieldJ / 2) - 2) && ((FieldI / 2) - 1 <= i && i <= (FieldI / 2) + 1)) || ((j == (FieldJ / 2) + 2) && ((FieldI / 2) - 1 <= i && i <= (FieldI / 2) + 1)))
             {
-                if (i == 0 || i == FieldI - 1 || j == 0 || j == FieldJ - 1 || (i == (FieldI / 2) - 1 && j == (FieldJ / 2) - 2 && j == (FieldJ / 2) + 2) || (i == (FieldI / 2) + 1 && (((FieldJ / 2) - 2) <= j && j <= ((FieldJ / 2) + 2))) || ((j == (FieldJ / 2) - 2) && ((FieldI / 2) - 1 <= i && i <= (FieldI / 2) + 1)) || ((j == (FieldJ / 2) + 2) && ((FieldI / 2) - 1 <= i && i <= (FieldI / 2) + 1)))
-                {
-                    Field[i][j] = '#';
-                }
-                else if ((i == (FieldI / 2) && (j == (FieldJ / 2) - 1 || j == (FieldJ / 2) || j == (FieldJ / 2) + 1)))
-                {
-                    Field[i][j] = 233;
-                }
-                else
-                {
-                    Field[i][j] = '.';
-                }
+                Field[i][j] = '#';
+            }
+            else if ((i == (FieldI / 2) && (j == (FieldJ / 2) - 1 || j == (FieldJ / 2) || j == (FieldJ / 2) + 1)))
+            {
+                Field[i][j] = 233;
+            }
+            else
+            {
+                Field[i][j] = '.';
             }
         }
-        randomBlocks();
     }
+    randomBlocks();
 }
 //--------------------------------------
 void printField()
@@ -111,7 +107,7 @@ void printField()
             }
             else
             {
-                cout << Field[i][j] << " ";
+                cout<<Field[i][j] << " ";
             }
         }
         cout << endl;
@@ -219,8 +215,10 @@ void endGame(int Score, bool win)
         gotoxy(0, 0);
         i = 1;
         j = 1;
+        LastChar1 = '.';
+        LastChar2 = '.';
+        LastChar3 = '.';
         PacMan = 16;
-        IsfirstRun = true;
         Dots = 0;
         Score = 0;
         isreplayed = true;
@@ -233,11 +231,10 @@ void endGame(int Score, bool win)
     }
 }
 //------------------------------------------------------
-bool isCaugthByGhost(int Gi, int Gj, char LastChar)
+bool isCaugthByGhost(int Gi, int Gj)
 {
     if (Field[Gi][Gj] == PacMan)
     {
-        LastChar = ' ';
         i = 1;
         j = 1;
         Life--;
@@ -254,13 +251,7 @@ void changeGhostLoc(int RandDirection, int Gi, int Gj, char LastChar)
 {
     int LastGI = Gi, LastGJ = Gj;
     getKey(Gi, Gj, Directions[RandDirection], "Ghost");
-    if (Field[Gi][Gj] == '#')
-    {
-        Gi = LastGI;
-        Gj = LastGJ;
-        ghost(Gi, Gj, LastChar);
-    }
-    if (Field[Gi][Gj] == (char)233)
+    if (Field[Gi][Gj] == '#' || Field[Gi][Gj] == (char)233)
     {
         Gi = LastGI;
         Gj = LastGJ;
@@ -268,7 +259,7 @@ void changeGhostLoc(int RandDirection, int Gi, int Gj, char LastChar)
     }
     Field[LastGI][LastGJ] = LastChar;
     LastChar = Field[Gi][Gj];
-    LastChar = isCaugthByGhost(Gi, Gj, LastChar) ? ' ' : LastChar;
+    LastChar = isCaugthByGhost(Gi, Gj) ? ' ' : LastChar;
     Field[Gi][Gj] = (char)233;
     ghost(Gi, Gj, LastChar);
 }
