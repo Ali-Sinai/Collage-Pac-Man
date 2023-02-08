@@ -5,6 +5,7 @@
 #include <time.h>
 #include <windows.h>
 #include <thread>
+#include <thread>
 #include "color-console-master/include/color.hpp"
 using namespace std;
 //----------------------
@@ -379,11 +380,15 @@ void moveWithCursorInfinity(char k)
     } while (!kbhit());
     k = getch();
     moveWithCursorInfinity(k);
+    moveWithCursorInfinity(k);
 }
 //-----------------------------------------------
 int main()
 {
     system("cls");
+    initField();
+    Field[1][1] = PacMan;
+    printField();
     initField();
     Field[1][1] = PacMan;
     printField();
